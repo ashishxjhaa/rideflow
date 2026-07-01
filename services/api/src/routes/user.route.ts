@@ -1,11 +1,8 @@
 import { Router } from "express";
-import { loginUser, registerUser } from "../controllers/user.controller";
-import { validate } from "../middlewares/validate";
-import { registerSchema, loginSchema } from "@rideflow/validation";
+import { getUserProfile } from "../controllers/user.controller";
 
 const router = Router();
 
-router.route("/register").post(validate(registerSchema), registerUser);
-router.route("/login").post(validate(loginSchema), loginUser);
+router.route("/me").get(getUserProfile);
 
 export default router;

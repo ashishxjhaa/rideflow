@@ -1,159 +1,154 @@
-# Turborepo starter
+# RideFlow
 
-This Turborepo starter is maintained by the Turborepo core team.
+A full-stack ride-hailing platform built as a Turborepo monorepo — modeled on Uber's core architecture, built to learn and practice production-grade backend engineering patterns end to end.
 
-## Using this example
+## Status
 
-Run the following command:
+🚧 In active development — auth module complete, ride-matching and payments in progress.
 
-```sh
-npx create-turbo@latest
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Runtime | Bun |
+| Language | TypeScript |
+| Framework | Express |
+| Database | PostgreSQL |
+| ORM | Prisma |
+| Monorepo | Turborepo |
+| Validation | Zod |
+| Auth | JWT (access + refresh tokens), Argon2 password hashing |
+
+## Monorepo Structure
+
+```
+rideflow/
+├── apps/
+│   ├── admin/            # Admin dashboard
+│   ├── driver/            # Driver-facing app
+│   └── web/                # Rider-facing web app
+├── packages/
+│   ├── eslint-config/
+│   ├── types/               # Shared TypeScript types
+│   ├── typescript-config/
+│   ├── ui/                   # Shared UI components
+│   └── validation/           # Shared Zod schemas
+└── services/
+    └── api/                    # Core backend API (Express + Prisma)
+        ├── prisma/
+        └── src/
+            ├── controllers/
+            ├── db/
+            ├── middlewares/
+            ├── routes/
+            └── utils/
 ```
 
-## What's inside?
+## Features
 
-This Turborepo includes the following packages/apps:
+### Implemented
+- User registration with email/password, hashed with Argon2
+- Login issuing a short-lived JWT access token + long-lived refresh token
+- Centralized Zod-based request validation middleware
+- Standardized handling of duplicate-email conflicts (Prisma unique constraint)
 
-### Apps and Packages
+### Planned
+- `GET /api/v1/users/me` — authenticated profile fetch
+- `/auth/refresh` and `/auth/logout` (session revocation)
+- Refresh token rotation + reuse detection
+- Rider / driver role separation
+- Ride request & matching engine
+- Real-time location tracking (WebSockets)
+- Payments integration
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+## Getting Started
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+### Installation
+```bash
+git clone <repo-url>
+cd rideflow
+bun install
 ```
 
-Without global `turbo`, use your package manager:
+### Environment Variables
 
-```sh
-cd my-turborepo
-npx turbo build
-bun dlx turbo build
-bun exec turbo build
+Create a `.env` file inside `services/api` based on `.env.example`:
+
+| Variable | Description | Example |
+|---|---|---|
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@host/db` |
+| `PORT` | API server port | `3000` |
+| `ACCESS_TOKEN_SECRET` | Secret for signing access tokens | — |
+| `ACCESS_TOKEN_EXPIRY` | Access token lifetime | `15m` |
+| `REFRESH_TOKEN_SECRET` | Secret for signing refresh tokens | — |
+| `REFRESH_TOKEN_EXPIRY` | Refresh token lifetime | `30d` |
+
+### Database Setup
+```bash
+cd services/api
+bunx prisma migrate dev
+bunx prisma generate
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
+### Run Locally
+```bash
+bun run dev
 ```
 
-Without global `turbo`:
+## API Reference
 
-```sh
-npx turbo build --filter=docs
-bun exec turbo build --filter=docs
-bun exec turbo build --filter=docs
+### Auth — `/api/v1/auth`
+
+| Method | Endpoint | Description | Auth Required |
+|---|---|---|---|
+| POST | `/register` | Create a new user account | No |
+| POST | `/login` | Authenticate and receive tokens | No |
+
+**POST `/register`**
+```json
+// Request
+{
+  "firstName": "Ashish",
+  "lastName": "Jha",
+  "email": "ashish@example.com",
+  "password": "strongpassword123"
+}
+
+// Response 201
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "firstName": "Ashish",
+    "lastName": "Jha",
+    "email": "ashish@example.com",
+    "createdAt": "2026-07-01T00:00:00.000Z"
+  }
+}
+
+// Response 409 — email already registered
+{ "error": "Email already exists" }
 ```
 
-### Develop
+**POST `/login`**
+```json
+// Request
+{ "email": "ashish@example.com", "password": "strongpassword123" }
 
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+// Response 200
+{ "success": true, "accessToken": "eyJhbGciOi..." }
+// Also sets an httpOnly `refreshToken` cookie
 ```
 
-Without global `turbo`, use your package manager:
+### Users — `/api/v1/users`
+🚧 In progress — `GET /me` planned next.
 
-```sh
-cd my-turborepo
-npx turbo dev
-bun exec turbo dev
-bun exec turbo dev
-```
+## Security Notes
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+- Passwords are hashed with Argon2 and never stored or returned in plaintext.
+- Access tokens are short-lived and verified statelessly (no DB lookup); refresh tokens are long-lived and used to mint new access tokens.
+- Refresh tokens are delivered via an `httpOnly`, `secure`, `sameSite=strict` cookie to reduce XSS exposure.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## License
 
-```sh
-turbo dev --filter=web
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-bun exec turbo dev --filter=web
-bun exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-bun exec turbo login
-bun exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-bun exec turbo link
-bun exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Not yet decided.
