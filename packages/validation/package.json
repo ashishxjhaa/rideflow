@@ -13,6 +13,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "zod": "^4.4.3"
   }
 }
