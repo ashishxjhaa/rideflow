@@ -16,8 +16,8 @@ A full-stack ride-hailing platform built as a Turborepo monorepo — modeled on 
 | Database | PostgreSQL |
 | ORM | Prisma |
 | Monorepo | Turborepo |
-| Validation | Zod |
-| Auth | JWT (access + refresh tokens), Argon2 password hashing |
+| Frontend Framework | Next.js |
+
 
 ## Monorepo Structure
 
@@ -44,24 +44,6 @@ rideflow/
             └── utils/
 ```
 
-## Features
-
-### Implemented
-- User registration with email/password, hashed with Argon2
-- Login issuing a short-lived JWT access token + long-lived refresh token
-- Centralized Zod-based request validation middleware
-- Standardized handling of duplicate-email conflicts (Prisma unique constraint)
-
-### Planned
-- `GET /api/v1/users/me` — authenticated profile fetch
-- `/auth/refresh` and `/auth/logout` (session revocation)
-- Refresh token rotation + reuse detection
-- Rider / driver role separation
-- Ride request & matching engine
-- Real-time location tracking (WebSockets)
-- Payments integration
-
-## Getting Started
 
 ### Installation
 ```bash
@@ -94,60 +76,6 @@ bunx prisma generate
 ```bash
 bun run dev
 ```
-
-## API Reference
-
-### Auth — `/api/v1/auth`
-
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| POST | `/register` | Create a new user account | No |
-| POST | `/login` | Authenticate and receive tokens | No |
-
-**POST `/register`**
-```json
-// Request
-{
-  "firstName": "Ashish",
-  "lastName": "Jha",
-  "email": "ashish@example.com",
-  "password": "strongpassword123"
-}
-
-// Response 201
-{
-  "success": true,
-  "data": {
-    "id": "uuid",
-    "firstName": "Ashish",
-    "lastName": "Jha",
-    "email": "ashish@example.com",
-    "createdAt": "2026-07-01T00:00:00.000Z"
-  }
-}
-
-// Response 409 — email already registered
-{ "error": "Email already exists" }
-```
-
-**POST `/login`**
-```json
-// Request
-{ "email": "ashish@example.com", "password": "strongpassword123" }
-
-// Response 200
-{ "success": true, "accessToken": "eyJhbGciOi..." }
-// Also sets an httpOnly `refreshToken` cookie
-```
-
-### Users — `/api/v1/users`
-🚧 In progress — `GET /me` planned next.
-
-## Security Notes
-
-- Passwords are hashed with Argon2 and never stored or returned in plaintext.
-- Access tokens are short-lived and verified statelessly (no DB lookup); refresh tokens are long-lived and used to mint new access tokens.
-- Refresh tokens are delivered via an `httpOnly`, `secure`, `sameSite=strict` cookie to reduce XSS exposure.
 
 ## License
 
