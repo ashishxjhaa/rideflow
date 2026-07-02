@@ -1,28 +1,49 @@
+import argon2 from "argon2";
 import type { Request, Response } from "express";
 import { prisma } from "../db/prisma";
-import argon2 from "argon2";
 import { generateAccessToken, generateRefreshToken } from "../utils/token";
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerCaptain = async (req: Request, res: Response) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      vehicleType,
+      color,
+      plate,
+      seatCapacity,
+    } = req.body;
 
     const passwordHash = await argon2.hash(password);
 
-    const user = await prisma.user.create({
-      data: { firstName, lastName, email, password: passwordHash },
+    const captain = await prisma.captain.create({
+      data: {
+        firstName,
+        lastName,
+        email,
+        password: passwordHash,
+        vehicleType,
+        color,
+        plate,
+        seatCapacity,
+      },
       select: {
         id: true,
         firstName: true,
         lastName: true,
         email: true,
-        createdAt: true,
+        vehicleType: true,
+        color: true,
+        plate: true,
+        seatCapacity: true,
       },
     });
 
     return res.status(201).json({
       success: true,
-      data: user,
+      data: captain,
     });
   } catch (error: any) {
     if (error.code === "P2002") {
@@ -37,31 +58,31 @@ export const registerUser = async (req: Request, res: Response) => {
   }
 };
 
-export const loginUser = async (req: Request, res: Response) => {
+export const loginCaptain = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    const user = await prisma.user.findUnique({
+    const captain = await prisma.captain.findUnique({
       where: { email },
     });
-    if (!user) {
+    if (!captain) {
       return res.status(400).json({
         error: "Wrong credentials",
       });
     }
 
-    const isValidPassword = await argon2.verify(user.password, password);
+    const isValidPassword = await argon2.verify(captain.password, password);
     if (!isValidPassword) {
       return res.status(400).json({
         error: "Wrong credentials",
       });
     }
 
-    const accessToken = generateAccessToken(user.id, "USER");
-    const refreshToken = generateRefreshToken(user.id, "USER");
+    const accessToken = generateAccessToken(captain.id, "CAPTAIN");
+    const refreshToken = generateRefreshToken(captain.id, "CAPTAIN");
 
-    await prisma.user.update({
-      where: { id: user.id },
+    await prisma.captain.update({
+      where: { id: captain.id },
       data: { refreshToken },
     });
 
@@ -69,7 +90,7 @@ export const loginUser = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      maxAge: 30 * 24 * 60 * 60 * 1000, //30 days
     });
 
     return res.status(200).json({
@@ -83,7 +104,7 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserProfile = async (req: Request, res: Response) => {
+export const getCaptainProfile = async (req: Request, res: Response) => {
   try {
     return res.status(200).json({
       success: true,
@@ -91,7 +112,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
     });
   } catch (error) {
     return res.status(500).json({
-      error: "Failed to fetch user profile",
+      error: "Failed to fetch captain profile",
     });
   }
 };
