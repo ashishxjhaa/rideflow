@@ -1,9 +1,11 @@
+import type { Role } from "@rideflow/types";
 import jwt, { type SignOptions } from "jsonwebtoken";
 
-export const generateAccessToken = (userId: string) => {
+export const generateAccessToken = (id: string, role: Role) => {
   return jwt.sign(
     {
-      id: userId,
+      id,
+      role,
     },
     process.env.ACCESS_TOKEN_SECRET as string,
     {
@@ -12,10 +14,11 @@ export const generateAccessToken = (userId: string) => {
   );
 };
 
-export const generateRefreshToken = (userId: string) => {
+export const generateRefreshToken = (id: string, role: Role) => {
   return jwt.sign(
     {
-      id: userId,
+      id,
+      role,
     },
     process.env.REFRESH_TOKEN_SECRET as string,
     {

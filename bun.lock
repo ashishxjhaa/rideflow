@@ -26,6 +26,15 @@
         "typescript-eslint": "^8.50.0",
       },
     },
+    "packages/types": {
+      "name": "@rideflow/types",
+      "devDependencies": {
+        "@types/bun": "latest",
+      },
+      "peerDependencies": {
+        "typescript": "^5",
+      },
+    },
     "packages/typescript-config": {
       "name": "@repo/typescript-config",
       "version": "0.0.0",
@@ -65,6 +74,7 @@
       "dependencies": {
         "@prisma/adapter-pg": "^7.8.0",
         "@prisma/client": "^7.8.0",
+        "@rideflow/types": "workspace:*",
         "@rideflow/validation": "workspace:*",
         "argon2": "^0.44.0",
         "bcrypt": "^6.0.0",
@@ -192,6 +202,8 @@
     "@repo/typescript-config": ["@repo/typescript-config@workspace:packages/typescript-config"],
 
     "@repo/ui": ["@repo/ui@workspace:packages/ui"],
+
+    "@rideflow/types": ["@rideflow/types@workspace:packages/types"],
 
     "@rideflow/validation": ["@rideflow/validation@workspace:packages/validation"],
 

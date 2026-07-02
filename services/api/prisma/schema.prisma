@@ -20,3 +20,39 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Captain {
+  id        String  @id @default(uuid())
+  firstName String
+  lastName  String?
+  email     String  @unique
+  password  String
+
+  status       CaptainStatus @default(INACTIVE)
+  vehicleType  VehicleType
+  color        String
+  plate        String        @unique
+  seatCapacity Int
+
+  refreshToken String?
+  socketId     String?
+
+  latitude  Float?
+  longitude Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+}
+
+enum CaptainStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum VehicleType {
+  CAR
+  MOTORCYCLE
+  AUTO
+}

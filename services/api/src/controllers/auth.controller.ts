@@ -58,8 +58,8 @@ export const loginUser = async (req: Request, res: Response) => {
       });
     }
 
-    const accessToken = generateAccessToken(user.id);
-    const refreshToken = generateRefreshToken(user.id);
+    const accessToken = generateAccessToken(user.id, "USER");
+    const refreshToken = generateRefreshToken(user.id, "USER");
 
     await prisma.user.update({
       where: { id: user.id },
