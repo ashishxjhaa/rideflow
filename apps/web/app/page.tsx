@@ -13,10 +13,10 @@ export default function Home() {
           className="ml-3"
         />
         <div className="bg-white text-black p-4 pb-7">
-          <h2 className="text-3xl font-bold">Get Started with Uber</h2>
+          <h2 className="text-2xl font-bold">Get Started with Uber</h2>
           <Link
             href="/user-login"
-            className="flex items-center justify-center w-full bg-black text-white py-3 rounded mt-5"
+            className="text-lg flex items-center justify-center w-full bg-black text-white py-3 rounded mt-5"
           >
             Continue
           </Link>

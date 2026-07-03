@@ -15,14 +15,14 @@ const firstNameSchema = z
 
 const lastNameSchema = z.string().trim().max(50).optional();
 
-export const registerSchema = z.object({
+export const registerUserSchema = z.object({
   firstName: firstNameSchema,
   lastName: lastNameSchema,
   email: emailSchema,
   password: passwordSchema,
 });
 
-export const loginSchema = z.object({
+export const loginUserSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
 });

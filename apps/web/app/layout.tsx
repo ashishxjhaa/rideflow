@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Ride Flow",
-  description: "Your best transport medium",
+  description: "Best Ride Sharing Platform",
 };
 
 export default function RootLayout({
