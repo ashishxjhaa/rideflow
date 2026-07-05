@@ -11,7 +11,13 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProvider = ({
+  children,
+  loginRedirect,
+}: {
+  children: React.ReactNode;
+  loginRedirect: string;
+}) => {
   const [accessToken, setTokenState] = useState<string | null>(null);
   const router = useRouter();
 
@@ -23,9 +29,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     setOnRefreshFail(() => {
       setTokenState(null);
-      router.replace("/user-login");
+      router.replace(loginRedirect);
     });
-  }, [router]);
+  }, [router, loginRedirect]);
 
   return (
     <AuthContext.Provider value={{ accessToken, setAccessToken }}>
