@@ -56,7 +56,7 @@ const UserSignup = () => {
 
       router.push("/user-login");
     } catch (error) {
-      console.log(error);
+      toast.error("Something is wrong");
     } finally {
       setLoading(false);
     }

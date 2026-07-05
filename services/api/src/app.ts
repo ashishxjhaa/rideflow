@@ -7,7 +7,12 @@ import sessionRouter from "./routes/session.route";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTED_URL,
+    credentials: true,
+  }),
+);
 app.use(cookieParser());
 
 app.use(express.json({ limit: "16kb" }));

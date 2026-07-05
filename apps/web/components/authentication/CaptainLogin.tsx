@@ -50,7 +50,7 @@ const CaptainLogin = () => {
 
       router.push("/home");
     } catch (error) {
-      console.log(error);
+      toast.error("Invalid email or password.");
     } finally {
       setLoading(false);
     }

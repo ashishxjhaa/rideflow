@@ -1,5 +1,12 @@
-const Home = () => {
-  return <div>Home Page</div>;
+import HomeContent from "@/components/HomeContent";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+
+const HomePage = () => {
+  return (
+    <ProtectedRoute>
+      <HomeContent />
+    </ProtectedRoute>
+  );
 };
 
-export default Home;
+export default HomePage;

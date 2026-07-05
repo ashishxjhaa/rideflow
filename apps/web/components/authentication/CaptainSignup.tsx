@@ -75,7 +75,7 @@ const CaptainSignup = () => {
 
       router.push("/captain-login");
     } catch (error) {
-      console.log(error);
+      toast.error("Invalid email or password.");
     } finally {
       setLoading(false);
     }
