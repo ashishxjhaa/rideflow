@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 type AuthContextType = {
   accessToken: string | null;
   setAccessToken: (token: string | null) => void;
+  loginRedirect: string;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -34,7 +35,9 @@ export const AuthProvider = ({
   }, [router, loginRedirect]);
 
   return (
-    <AuthContext.Provider value={{ accessToken, setAccessToken }}>
+    <AuthContext.Provider
+      value={{ accessToken, setAccessToken, loginRedirect }}
+    >
       {children}
     </AuthContext.Provider>
   );

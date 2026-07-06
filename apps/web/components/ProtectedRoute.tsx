@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { Spinner } from "./ui/spinner";
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { accessToken, setAccessToken } = useAuth();
+  const { accessToken, setAccessToken, loginRedirect } = useAuth();
   const router = useRouter();
   const [checking, setChecking] = useState(!accessToken);
 
@@ -17,7 +17,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     api
       .post("/api/v1/session/refresh")
       .then((res) => setAccessToken(res.data.accessToken))
-      .catch(() => router.replace("/user-login"))
+      .catch(() => router.replace(loginRedirect))
       .finally(() => setChecking(false));
   }, [accessToken]);
 

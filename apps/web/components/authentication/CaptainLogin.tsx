@@ -7,7 +7,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { loginCaptainSchema } from "@rideflow/validation";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import { api } from "../../lib/axios";
+import { useAuth } from "../../context/AuthContext";
 import { Eye, EyeOff } from "lucide-react";
 import { Spinner } from "../ui/spinner";
 import { toast } from "sonner";
@@ -18,6 +19,7 @@ const CaptainLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const { setAccessToken } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -37,18 +39,14 @@ const CaptainLogin = () => {
 
     try {
       setLoading(true);
-
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/captains/login`,
-        result.data,
-      );
-
+      const res = await api.post("/api/v1/captains/login", result.data);
+      setAccessToken(res.data.accessToken);
       toast.success("Login successfully.");
 
       setEmail("");
       setPassword("");
 
-      router.push("/home");
+      router.push("/captain-home");
     } catch (error) {
       toast.error("Invalid email or password.");
     } finally {
